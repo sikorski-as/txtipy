@@ -39,10 +39,10 @@ class PageAlreadyExists(Exception):
 	def __init__(self, pagename):
 		super().__init__(pagename + ' already exists')
 		self.pagename = pagename
-		
+			
 class Page:
 	def __init__(self, name, password):
-		self.name = name
+		self.name = name # url
 		self.password = password
 		self._session = requests.Session()
 		
@@ -70,10 +70,14 @@ class Page:
 				
 		return good_pass and good_url and good_content and good_response
 		
-	def change_field(self, fieldname, value):
+	def set_field(self, fieldname, value):
 		form = self.get_form()
 		form[fieldname] = value
 		return self.post_form(form)
+		
+	def get_field(self, fieldname):
+		form = self.get_form()
+		return form[fieldname]
 		
 	#
 	# high-level methods
@@ -110,24 +114,44 @@ class Page:
 		good_second = self.post_form(form)
 		return good_first and good_second	
 		
-	def change_password(self, new_password):
-		status = self.change_field('custom_edit_code', new_password)
-		if status:
-			self.password = new_password
-		return status
-		
-	def change_content(self, new_content):
-		return self.change_field('content', new_content)
-	
-	def change_title(self, new_title):
-		return self.change_field('title', new_title)
-		
-	def change_descritpion(self, new_description):
-		return self.change_field('description', new_description)
-		
-	def change_url(self, new_url):
-		status = self.change_field('custom_url', new_url)	
+	# url
+	def set_url(self, new_url):
+		status = self.set_field('custom_url', new_url)	
 		if status:
 			self.name = new_url
 			
 		return status
+		
+	def get_url(self):
+		return self.name
+		
+	# password	
+	def get_password(self):
+		return self.password
+		
+	def set_password(self, new_password):
+		status = self.set_field('custom_edit_code', new_password)
+		if status:
+			self.password = new_password
+		return status
+		
+	# content	
+	def get_content(self):
+		return self.get_field('content')
+	
+	def set_content(self, new_content):
+		return self.set_field('content', new_content)
+	
+	# title
+	def get_title(self):
+		return self.get_field('title')
+		
+	def set_title(self, new_title):
+		return self.set_field('title', new_title)
+
+	# description
+	def get_description(self):
+		return self.get_field('description')	
+	
+	def set_descritpion(self, new_description):
+		return self.set_field('description', new_description)
